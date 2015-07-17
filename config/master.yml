@@ -1,5 +1,5 @@
 chromanode:
-  network: testnet # livenet | testnet
+  network: livenet # livenet | testnet
   sync:
     maxCachedBlocks: 2 # useful for remote bitcoind
 
@@ -8,15 +8,16 @@ logger:
   filename: master.log
 
 postgresql:
-  url: postgres://user:pass@host:port/database_name
+  url: postgres://jorgen:masonit@localhost:17520/jorgen
+
 
 bitcoind:
   peer:
     host: localhost
-    port: 18333
+    port: 8333
   rpc:
     host: localhost
-    port: 18332
-    user: bitcoinrpc
-    pass: uMXXbdR2D7gh8BDofJC47dB6WyBEa8sRmM1N4JyPHv6
+    port: 8332
+    user: jorgen
+    pass: masonit
     protocol: http

@@ -27,7 +27,7 @@ var util = require('../../lib/util')
 /**
  * @class Network
  */
-function Network () {
+function Network() {
   EventEmitter.call(this)
 }
 
@@ -36,14 +36,14 @@ inherits(Network, EventEmitter)
 /**
  * @return {Promise}
  */
-Network.prototype.init = function () {
-  return Promise.all([this._initBitcoind(), this._initTrustedPeer()])
+Network.prototype.init = function() {
+  return Promise.all([this._initBitcoind()])
 }
 
 /**
  * @return {Promise}
  */
-Network.prototype._initBitcoind = function () {
+Network.prototype._initBitcoind = function() {
   var self = this
 
   // create rpc client
@@ -57,7 +57,7 @@ Network.prototype._initBitcoind = function () {
 
   // request info
   return self.bitcoind.getInfoAsync()
-    .then(function (ret) {
+    .then(function(ret) {
       // check network
       var bitcoindNetwork = ret.result.testnet ? 'testnet' : 'livenet'
       if (bitcoindNetwork !== config.get('chromanode.network')) {
@@ -74,124 +74,137 @@ Network.prototype._initBitcoind = function () {
 /**
  * @return {Promise}
  */
-Network.prototype._initTrustedPeer = function () {
-  var self = this
+// Network.prototype._initTrustedPeer = function() {
+//   var self = this
 
-  // create trusted peer
-  self.peer = new p2p.Peer({
-    host: config.get('chromanode.host'),
-    port: config.get('chromanode.port'),
-    network: config.get('chromanode.network')
-  })
-  timers.setImmediate(function () { self.peer.connect() })
+//   // create trusted Peer
+//   var info = 'host:' + config.get('chromanode.host') + 'port:' + config.get('chromanode.port') + 'network:' + config.get('chromanode.network')
+//   logger.info(info)
+//   self.peer = new p2p.Peer({
+//     host: config.get('chromanode.host'),
+//     port: config.get('chromanode.port'),
+//     network: config.get('chromanode.network')
+//   })
+//   timers.setImmediate(function() {
+//     self.peer.connect()
+//   })
 
-  // inv event
-  self.peer.on('inv', function (message) {
-    var names = []
+//   // inv event
+//   self.peer.on('inv', function(message) {
+//     var names = []
 
-    message.inventory.forEach(function (inv) {
-      // store inv type name
-      names.push(p2p.Inventory.TYPE_NAME[inv.type])
+//     message.inventory.forEach(function(inv) {
+//       // store inv type name
+//       names.push(p2p.Inventory.TYPE_NAME[inv.type])
 
-      // store inv if tx type
-      if (inv.type === p2p.Inventory.TYPE.TX) {
-        self.emit('tx', util.encode(inv.hash))
-      }
+//       // store inv if tx type
+//       if (inv.type === p2p.Inventory.TYPE.TX) {
+//         self.emit('tx', util.encode(inv.hash))
+//       }
 
-      // emit block if block type
-      if (inv.type === p2p.Inventory.TYPE.BLOCK) {
-        self.emit('block', util.encode(inv.hash))
-      }
-    })
+//       // emit block if block type
+//       if (inv.type === p2p.Inventory.TYPE.BLOCK) {
+//         self.emit('block', util.encode(inv.hash))
+//       }
+//     })
 
-    logger.verbose('Receive inv (%s) message from peer %s:%s',
-                   names.join(', '), self.peer.host, self.peer.port)
-  })
+//     logger.verbose('Receive inv (%s) message from peer %s:%s',
+//       names.join(', '), self.peer.host, self.peer.port)
+//   })
 
-  // connect event
-  self.peer.on('connect', function () {
-    logger.info('Connected to network peer %s:%s',
-                self.peer.host, self.peer.port)
-  })
+//   // connect event
+//   self.peer.on('connect', function() {
+//     logger.info('Connected to network peer %s:%s',
+//       self.peer.host, self.peer.port)
+//   })
 
-  // disconnect event
-  self.peer.on('disconnect', function () {
-    logger.info('Disconnected from network peer %s:%s',
-                self.peer.host, self.peer.port)
-  })
+//   // disconnect event
+//   self.peer.on('disconnect', function() {
+//     logger.info('Disconnected from network peer %s:%s',
+//       self.peer.host, self.peer.port)
+//   })
 
-  // ready event
-  self.peer.on('ready', function () {
-    logger.info(
-      'Peer %s:%s is ready (version: %s, subversion: %s, bestHeight: %s)',
-      self.peer.host, self.peer.port,
-      self.peer.version, self.peer.subversion, self.peer.bestHeight)
-  })
+//   // ready event
+//   self.peer.on('ready', function() {
+//     logger.info(
+//       'Peer %s:%s is ready (version: %s, subversion: %s, bestHeight: %s)',
+//       self.peer.host, self.peer.port,
+//       self.peer.version, self.peer.subversion, self.peer.bestHeight)
+//   })
 
-  // waiting peer ready
-  return new Promise(function (resolve) {
-    self.peer.on('ready', resolve)
-  })
-}
+//   // waiting peer ready
+//   return new Promise(function(resolve) {
+//     self.peer.on('ready', resolve)
+//   })
+// }
 
 /**
  * @return {Promise<Object>}
  */
-Network.prototype.getBitcoindInfo = function () {
+Network.prototype.getBitcoindInfo = function() {
   return this.bitcoind.getInfoAsync()
-    .then(function (ret) { return ret.result })
+    .then(function(ret) {
+      return ret.result
+    })
 }
 
 /**
  * @return {Promise<number>}
  */
-Network.prototype.getBlockCount = function () {
+Network.prototype.getBlockCount = function() {
   return this.bitcoind.getBlockCountAsync()
-    .then(function (ret) { return ret.result })
+    .then(function(ret) {
+      return ret.result
+    })
 }
 
 /**
  * @param {number} height
  * @return {Promise<string>}
  */
-Network.prototype.getBlockHash = function (height) {
+Network.prototype.getBlockHash = function(height) {
   return this.bitcoind.getBlockHashAsync(height)
-    .then(function (ret) { return ret.result })
+    .then(function(ret) {
+      return ret.result
+    })
 }
 
 /**
  * @param {(number|string)} id
  * @return {Promise<bitcore.Block>}
  */
-Network.prototype.getBlock = function (id) {
+Network.prototype.getBlock = function(id) {
   var self = this
-  return Promise.try(function () {
-    if (_.isNumber(id)) {
-      return self.getBlockHash(id)
-    }
+  return Promise.try(function() {
+      if (_.isNumber(id)) {
+        return self.getBlockHash(id)
+      }
 
-    return id
-  })
-  .then(function (hash) {
-    return self.bitcoind.getBlockAsync(hash, false)
-  })
-  .then(function (ret) {
-    var rawBlock = new Buffer(ret.result, 'hex')
-    return new bitcore.Block(rawBlock)
-  })
+      return id
+    })
+    .then(function(hash) {
+      return self.bitcoind.getBlockAsync(hash, false)
+    })
+    .then(function(ret) {
+      var rawBlock = new Buffer(ret.result, 'hex')
+      return new bitcore.Block(rawBlock)
+    })
 }
 
 /**
  * @return {Promise<{hash: string, height: number}>}
  */
-Network.prototype.getLatest = function () {
+Network.prototype.getLatest = function() {
   var self = this
   return self.getBlockCount()
-    .then(function (height) {
+    .then(function(height) {
       return Promise.all([height, self.getBlockHash(height)])
     })
-    .spread(function (height, hash) {
-      return {hash: hash, height: height}
+    .spread(function(height, hash) {
+      return {
+        hash: hash,
+        height: height
+      }
     })
 }
 
@@ -200,9 +213,9 @@ Network.prototype.getLatest = function () {
  * @param {string} txid
  * @return {Promise<bitcore.Transaction>}
  */
-Network.prototype.getTx = function (txid) {
+Network.prototype.getTx = function(txid) {
   return this.bitcoind.getRawTransactionAsync(txid)
-    .then(function (ret) {
+    .then(function(ret) {
       var rawtx = new Buffer(ret.result, 'hex')
       return new bitcore.Transaction(rawtx)
     })
@@ -212,16 +225,18 @@ Network.prototype.getTx = function (txid) {
  * @param {string} rawtx
  * @return {Promise}
  */
-Network.prototype.sendTx = function (rawtx) {
+Network.prototype.sendTx = function(rawtx) {
   return this.bitcoind.sendRawTransactionAsync(rawtx)
 }
 
 /**
  * @return {Promise<string[]>}
  */
-Network.prototype.getMempoolTxs = function () {
+Network.prototype.getMempoolTxs = function() {
   return this.bitcoind.getRawMemPoolAsync()
-    .then(function (ret) { return ret.result })
+    .then(function(ret) {
+      return ret.result
+    })
 }
 
 module.exports = Network

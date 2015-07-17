@@ -44,15 +44,15 @@ var sql = require('./sql')
  * @class Master
  * @param {Storage} storage
  */
-function Master (storage) {
+function Master(storage) {
   var self = this
   EventEmitter.call(self)
 
   self._storage = storage
   self._sendTxDeferreds = {}
 
-  self._lastStatus = new Promise(function (resolve) {
-    self.on('status', function (status) {
+  self._lastStatus = new Promise(function(resolve) {
+    self.on('status', function(status) {
       if (self._lastStatus.isPending()) {
         return resolve(status)
       }
@@ -67,7 +67,7 @@ inherits(Master, EventEmitter)
 /**
  * @return {Promise}
  */
-Master.prototype.init = function () {
+Master.prototype.init = function() {
   var self = this
 
   /**
@@ -75,13 +75,15 @@ Master.prototype.init = function () {
    * @param {string} handler
    * @return {Promise}
    */
-  function listen (channel, handler) {
+  function listen(channel, handler) {
     if (_.isString(handler)) {
       var event = handler
-      handler = function (payload) { self.emit(event, payload) }
+      handler = function(payload) {
+        self.emit(event, payload)
+      }
     }
 
-    return self._storage.listen(channel, function (payload) {
+    return self._storage.listen(channel, function(payload) {
       handler(JSON.parse(payload))
     })
   }
@@ -98,14 +100,14 @@ Master.prototype.init = function () {
 /**
  * @return {Promise<Object>}
  */
-Master.prototype.getStatus = function () {
+Master.prototype.getStatus = function() {
   return this._lastStatus
 }
 
 /**
  * @param {Object} payload
  */
-Master.prototype._onSendTxResponse = function (payload) {
+Master.prototype._onSendTxResponse = function(payload) {
   var defer = this._sendTxDeferreds[payload.id]
   if (defer === undefined) {
     return
@@ -117,7 +119,10 @@ Master.prototype._onSendTxResponse = function (payload) {
   }
 
   var err = new errors.Slave.SendTxError()
-  err.data = {code: payload.code, message: unescape(payload.message)}
+  err.data = {
+    code: payload.code,
+    message: unescape(payload.message)
+  }
   return defer.reject(err)
 }
 
@@ -125,16 +130,21 @@ Master.prototype._onSendTxResponse = function (payload) {
  * @param {string} rawtx
  * @return {Promise}
  */
-Master.prototype.sendTx = function (rawtx) {
+Master.prototype.sendTx = function(rawtx) {
   var self = this
-  return this._storage.execute(function (client) {
+  return this._storage.execute(function(client) {
     return client.queryAsync(sql.insert.new_txs.row, [rawtx]).then(
-      function (result) {
+      function(result) {
         var id = result.rows[0].id
-        return new Promise(function (resolve, reject) {
-            self._sendTxDeferreds[id] = { resolve: resolve, reject: reject }
-            self._storage.notify('sendtx', JSON.stringify({id: id}).catch(reject)
-        })                                                                     
+        return new Promise(function(resolve, reject) {
+          self._sendTxDeferreds[id] = {
+            resolve: resolve,
+            reject: reject
+          }
+          self._storage.notify('sendtx', JSON.stringify({
+            id: id
+          })).catch(reject)
+        })
       })
   })
 }
