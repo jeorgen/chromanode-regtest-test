@@ -74,69 +74,69 @@ Network.prototype._initBitcoind = function() {
 /**
  * @return {Promise}
  */
-// Network.prototype._initTrustedPeer = function() {
-//   var self = this
+Network.prototype._initTrustedPeer = function() {
+  var self = this
 
-//   // create trusted Peer
-//   var info = 'host:' + config.get('chromanode.host') + 'port:' + config.get('chromanode.port') + 'network:' + config.get('chromanode.network')
-//   logger.info(info)
-//   self.peer = new p2p.Peer({
-//     host: config.get('chromanode.host'),
-//     port: config.get('chromanode.port'),
-//     network: config.get('chromanode.network')
-//   })
-//   timers.setImmediate(function() {
-//     self.peer.connect()
-//   })
+  // create trusted Peer
+  var info = 'host:' + config.get('chromanode.host') + 'port:' + config.get('chromanode.port') + 'network:' + config.get('chromanode.network')
+  logger.info(info)
+  self.peer = new p2p.Peer({
+    host: config.get('chromanode.host'),
+    port: config.get('chromanode.port'),
+    network: config.get('chromanode.network')
+  })
+  timers.setImmediate(function() {
+    self.peer.connect()
+  })
 
-//   // inv event
-//   self.peer.on('inv', function(message) {
-//     var names = []
+  // inv event
+  self.peer.on('inv', function(message) {
+    var names = []
 
-//     message.inventory.forEach(function(inv) {
-//       // store inv type name
-//       names.push(p2p.Inventory.TYPE_NAME[inv.type])
+    message.inventory.forEach(function(inv) {
+      // store inv type name
+      names.push(p2p.Inventory.TYPE_NAME[inv.type])
 
-//       // store inv if tx type
-//       if (inv.type === p2p.Inventory.TYPE.TX) {
-//         self.emit('tx', util.encode(inv.hash))
-//       }
+      // store inv if tx type
+      if (inv.type === p2p.Inventory.TYPE.TX) {
+        self.emit('tx', util.encode(inv.hash))
+      }
 
-//       // emit block if block type
-//       if (inv.type === p2p.Inventory.TYPE.BLOCK) {
-//         self.emit('block', util.encode(inv.hash))
-//       }
-//     })
+      // emit block if block type
+      if (inv.type === p2p.Inventory.TYPE.BLOCK) {
+        self.emit('block', util.encode(inv.hash))
+      }
+    })
 
-//     logger.verbose('Receive inv (%s) message from peer %s:%s',
-//       names.join(', '), self.peer.host, self.peer.port)
-//   })
+    logger.verbose('Receive inv (%s) message from peer %s:%s',
+      names.join(', '), self.peer.host, self.peer.port)
+  })
 
-//   // connect event
-//   self.peer.on('connect', function() {
-//     logger.info('Connected to network peer %s:%s',
-//       self.peer.host, self.peer.port)
-//   })
+  // connect event
+  self.peer.on('connect', function() {
+    logger.info('Connected to network peer %s:%s',
+      self.peer.host, self.peer.port)
+  })
 
-//   // disconnect event
-//   self.peer.on('disconnect', function() {
-//     logger.info('Disconnected from network peer %s:%s',
-//       self.peer.host, self.peer.port)
-//   })
+  // disconnect event
+  self.peer.on('disconnect', function() {
+    logger.info('Disconnected from network peer %s:%s',
+      self.peer.host, self.peer.port)
+  })
 
-//   // ready event
-//   self.peer.on('ready', function() {
-//     logger.info(
-//       'Peer %s:%s is ready (version: %s, subversion: %s, bestHeight: %s)',
-//       self.peer.host, self.peer.port,
-//       self.peer.version, self.peer.subversion, self.peer.bestHeight)
-//   })
+  // ready event
+  self.peer.on('ready', function() {
+    logger.info(
+      'Peer %s:%s is ready (version: %s, subversion: %s, bestHeight: %s)',
+      self.peer.host, self.peer.port,
+      self.peer.version, self.peer.subversion, self.peer.bestHeight)
+  })
 
-//   // waiting peer ready
-//   return new Promise(function(resolve) {
-//     self.peer.on('ready', resolve)
-//   })
-// }
+  // waiting peer ready
+  return new Promise(function(resolve) {
+    self.peer.on('ready', resolve)
+  })
+}
 
 /**
  * @return {Promise<Object>}

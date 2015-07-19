@@ -11,7 +11,7 @@ var util = require('../../lib/util')
 var Network = require('./network')
 var Slaves = require('./slaves')
 var HistorySync = require('./sync/history')
-  // var PeerSync = require('./sync/peer')
+var PeerSync = require('./sync/peer')
 var sql = require('./sql')
 
 /**
@@ -53,7 +53,7 @@ Master.prototype.init = function() {
   self.network = new Network()
   self.slaves = new Slaves(self.storage)
   self.historySync = new HistorySync(self.storage, self.network, self.slaves)
-    // self.peerSync = new PeerSync(self.storage, self.network, self.slaves)
+  self.peerSync = new PeerSync(self.storage, self.network, self.slaves)
   return Promise.all([
       self.storage.init(),
       self.network.init()
@@ -189,32 +189,32 @@ Master.prototype._runHistorySync = function() {
       setTimeout(self._runHistorySync.bind(self), 30 * 1000)
       throw err
     })
-    // .then(function () {
-    //   logger.info('HistorySync finished!')
+    .then(function () {
+      logger.info('HistorySync finished!')
 
-  //   // run PeerSync
-  //   timers.setImmediate(self._runPeerSync.bind(self))
-  // })
+    // run PeerSync
+    timers.setImmediate(self._runPeerSync.bind(self))
+  })
 }
 
 /**
  */
-// Master.prototype._runPeerSync = function() {
-//   var self = this
+Master.prototype._runPeerSync = function() {
+  var self = this
 
-//   logger.info('Run PeerSync...')
+  logger.info('Run PeerSync...')
 
-//   self.peerSync.on('latest', function(latest) {
-//     self.status.latest = latest
-//     self.broadcastStatus()
-//   })
+  self.peerSync.on('latest', function(latest) {
+    self.status.latest = latest
+    self.broadcastStatus()
+  })
 
-//   self.peerSync.run()
-//     .catch(function(err) {
-//       logger.error('Error on calling PeerSync.run()! Please restart...')
-//       throw err
-//     })
-// }
+  self.peerSync.run()
+    .catch(function(err) {
+      logger.error('Error on calling PeerSync.run()! Please restart...')
+      throw err
+    })
+}
 
 /**
  * @return {Promise}
