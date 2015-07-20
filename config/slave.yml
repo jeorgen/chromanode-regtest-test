@@ -9,5 +9,5 @@ logger:
   filename: slave.log
 
 postgresql:
-  url: postgres://jorgen:masonit@localhost:17520/jorgen
+  url: postgres://jorgen:masonit@localhost:17520/chromaway
   poolSize: 10

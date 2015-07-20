@@ -8,7 +8,7 @@ logger:
   filename: master.log
 
 postgresql:
-  url: postgres://jorgen:masonit@localhost:17520/jorgen
+  url: postgres://chromaway:masonit@localhost:17520/chromaway
 
 
 bitcoind:
@@ -18,6 +18,6 @@ bitcoind:
   rpc:
     host: localhost
     port: 8332
-    user: jorgen
+    user: chromaway
     pass: masonit
     protocol: http
