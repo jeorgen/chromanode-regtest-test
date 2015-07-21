@@ -1,5 +1,5 @@
 chromanode:
-  network: livenet
+  network: testnet
   enableHTTPS: false
   host: localhost
   port: 3001
