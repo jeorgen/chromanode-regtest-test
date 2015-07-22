@@ -1,4 +1,19 @@
 /* globals Promise:true */
+// var njstrace = require('njstrace').inject({files:['**/*.js', '!**/node_modules/**']});
+// add regtest network support to bitcore
+var bitcore = require('bitcore')
+bitcore.Networks.add({
+  name: 'regtest',
+  alias: 'regtest',
+  pubkeyhash: 0x6f,
+  privatekey: 0xef,
+  scripthash: 0xc4,
+  xpubkey: 0x043587cf,
+  xprivkey: 0x04358394,
+  networkMagic: 0xFABFB5DA,
+  port: 8333,
+  dnsSeeds: [ ]
+})
 
 var _ = require('lodash')
 var timers = require('timers')
@@ -13,6 +28,8 @@ var Slaves = require('./slaves')
 var HistorySync = require('./sync/history')
 var PeerSync = require('./sync/peer')
 var sql = require('./sql')
+
+
 
 /**
  * @class Master
@@ -139,6 +156,7 @@ Master.prototype._installBitcoindHandlers = function() {
   }
 
   var onNewBlock = util.makeConcurrent(function() {
+    logger.info("We got a new block")
     return self.network.getLatest()
       .then(function(latest) {
         if (self.status.bitcoind.latest.hash !== latest.hash) {
@@ -149,6 +167,7 @@ Master.prototype._installBitcoindHandlers = function() {
   }, {
     concurrency: 1
   })
+  logger.info('in index.js, we create a handler for new blocks')
   self.network.on('block', onNewBlock)
 
   return Promise.all([

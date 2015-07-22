@@ -14,19 +14,9 @@ var errors = require('../../lib/errors')
 var logger = require('../../lib/logger').logger
 var util = require('../../lib/util')
 
-// add regtest network support to bitcore
-bitcore.Networks.add({
-  name: 'regtest',
-  alias: 'regtest',
-  pubkeyhash: 0x6f,
-  privatekey: 0xef,
-  scripthash: 0xc4,
-  xpubkey: 0x043587cf,
-  xprivkey: 0x04358394,
-  networkMagic: 0xFABFB5DA,
-  port: 8333,
-  dnsSeeds: [ ]
-});
+    logger.info("**** in network module")
+
+
 
 
 /**
@@ -94,18 +84,24 @@ Network.prototype._initTrustedPeer = function() {
 
   // create trusted Peer
   var info = 'host:' + config.get('chromanode.host') + 'port:' + config.get('chromanode.port') + 'network:' + config.get('chromanode.network')
-  logger.info(info)
+  logger.info("*****In init trusted peer:" + info)
   self.peer = new p2p.Peer({
     host: config.get('chromanode.host'),
     port: config.get('chromanode.port'),
     network: 'regtest'
   })
+    logger.info("**** peer is created")
+
   timers.setImmediate(function() {
+    logger.info("**** peer connects")
+
     self.peer.connect()
   })
 
   // inv event
   self.peer.on('inv', function(message) {
+        logger.info("**** peer triggers on inv")
+
     var names = []
 
     message.inventory.forEach(function(inv) {

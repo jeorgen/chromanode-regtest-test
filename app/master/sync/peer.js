@@ -364,6 +364,8 @@ PeerSync.prototype._executor = util.makeConcurrent(function (fn) {
  */
 PeerSync.prototype._runBlockImport = util.makeConcurrent(function () {
   var self = this
+      logger.info("In _runBlockImport")
+
   // get latest from bitcoind
   return self._network.getLatest()
     .then(function (newBlockchainLatest) {
@@ -428,6 +430,7 @@ PeerSync.prototype.run = function () {
       self._latest = latest
 
       // block handler
+      logger.info("Installing block handler in Peersync")
       self._network.on('block', self._runBlockImport.bind(self))
 
       // tx handler
