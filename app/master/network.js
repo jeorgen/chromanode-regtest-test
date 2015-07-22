@@ -95,12 +95,6 @@ Network.prototype._initTrustedPeer = function() {
   // create trusted Peer
   var info = 'host:' + config.get('chromanode.host') + 'port:' + config.get('chromanode.port') + 'network:' + config.get('chromanode.network')
   logger.info(info)
-  var network = config.get('chromanode.network')
-  // get regtest status
-  if (network === 'testnet') {
-    network = config.get('testnetwork')
-  }
-  network = 
   self.peer = new p2p.Peer({
     host: config.get('chromanode.host'),
     port: config.get('chromanode.port'),
