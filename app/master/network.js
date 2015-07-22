@@ -59,10 +59,10 @@ Network.prototype._initBitcoind = function () {
   return self.bitcoind.getInfoAsync()
     .then(function (ret) {
       // check network
-      var bitcoindNetwork = ret.result.testnet ? 'testnet' : 'livenet'
-      if (bitcoindNetwork !== config.get('chromanode.network')) {
-        throw new errors.InvalidBitcoindNetwork()
-      }
+      // var bitcoindNetwork = ret.result.testnet ? 'testnet' : 'livenet'
+      // if (bitcoindNetwork !== config.get('chromanode.network')) {
+      //   throw new errors.InvalidBitcoindNetwork()
+      // }
 
       // show info
       logger.info(
