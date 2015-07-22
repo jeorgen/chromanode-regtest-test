@@ -129,7 +129,7 @@ Network.prototype._initTrustedPeer = function() {
       }
     })
 
-    logger.verbose('Receive inv (%s) message from peer %s:%s',
+    logger.info('Receive inv (%s) message from peer %s:%s',
       names.join(', '), self.peer.host, self.peer.port)
   })
 
