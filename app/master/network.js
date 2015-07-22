@@ -81,7 +81,7 @@ Network.prototype._initTrustedPeer = function () {
   self.peer = new p2p.Peer({
     host: config.get('chromanode.host'),
     port: config.get('chromanode.port'),
-    network: config.get('chromanode.network')
+    network: 'regtest'
   })
   timers.setImmediate(function () { self.peer.connect() })
 
