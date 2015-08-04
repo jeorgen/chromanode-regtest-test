@@ -5,7 +5,7 @@ var EventEmitter = require('events').EventEmitter
 var inherits = require('util').inherits
 var timers = require('timers')
 var Promise = require('bluebird')
-var bitcore = require('bitcore')
+var bitcore = require('../../lib/patchedbitcore')
 var p2p = require('bitcore-p2p')
 var RpcClient = require('bitcoind-rpc')
 
