@@ -59,10 +59,9 @@ Network.prototype._initBitcoind = function () {
   return self.bitcoind.getInfoAsync()
     .then(function (ret) {
       // check network
-      var bitcoindNetwork = ret.result.testnet ? 'testnet' : 'livenet' //jorgen@webworks.se
-      var chromanodeNetwork = config.get('chromanode.network')
-      var regTestMode = chromanodeNetwork == 'testnet' && config.get('chromanode.testnetwork') == 'regtest'
-      if (bitcoindNetwork !== chromanodeNetwork && !regTestMode) {
+      var bitcoindNetwork = ret.result.testnet ? 'testnet' : 'livenet'
+      var chromanodeNetwork = util.getNetworkName(config)
+      if (bitcoindNetwork !== chromanodeNetwork && chromanodeNetwork !== 'regtest') {
         throw new errors.InvalidBitcoindNetwork(bitcoindNetwork, config.get('chromanode.network'))
       }
 
@@ -83,7 +82,7 @@ Network.prototype._initTrustedPeer = function () {
   self.peer = new p2p.Peer({
     host: config.get('chromanode.host'),
     port: config.get('chromanode.port'),
-    network: 'regtest'
+    network: util.getNetworkName(config)
   })
   timers.setImmediate(function () { self.peer.connect() })
 
